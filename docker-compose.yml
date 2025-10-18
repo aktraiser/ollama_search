@@ -1,0 +1,24 @@
+services:
+  # Open WebUI (skip if you already run it elsewhere)
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: openwebui
+    restart: unless-stopped
+    ports:
+      - "3000:8080"
+    volumes:
+      - openwebui-data:/app/backend/data
+
+  # FastAPI proxy → Ollama Cloud Web Search
+  ollama-websearch:
+    build: ./proxy
+    container_name: ollama-websearch
+    restart: unless-stopped
+    environment:
+      - OLLAMA_API_KEY=${OLLAMA_API_KEY}
+      - OLLAMA_BASE_URL=https://ollama.com/api
+    ports:
+      - "8010:8000"   # host:container
+
+volumes:
+  openwebui-data:
