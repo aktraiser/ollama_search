@@ -67,7 +67,7 @@ Once configured, you'll have access to two new tools in Open WebUI:
    ```bash
    curl -X POST http://localhost:8010/web_search \
      -H "Content-Type: application/json" \
-     -d '{"query": "FastAPI tutorial", "max_results": 3}'
+     -d '{"query": "FastAPI tutorial", "max_results": 3}' -v
    ```
 
 3. **Verify API key:**
