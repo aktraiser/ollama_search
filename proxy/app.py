@@ -52,7 +52,18 @@ async def web_search(payload: WebSearchIn):
         resp = await client.post(url, headers=headers, json=data)
     if resp.status_code >= 400:
         raise HTTPException(resp.status_code, resp.text)
-    return resp.json()
+    
+    result = resp.json()
+    
+    # Truncate content to manage context window (Ollama recommendation: 8000 chars)
+    if "results" in result:
+        for search_result in result["results"]:
+            if "content" in search_result and search_result["content"]:
+                content = search_result["content"]
+                if len(content) > 8000:
+                    search_result["content"] = content[:8000] + "..."
+    
+    return result
 
 @app.post("/web_fetch", response_model=WebFetchOut)
 async def web_fetch(payload: WebFetchIn):
@@ -63,7 +74,16 @@ async def web_fetch(payload: WebFetchIn):
         resp = await client.post(url, headers=headers, json=data)
     if resp.status_code >= 400:
         raise HTTPException(resp.status_code, resp.text)
-    return resp.json()
+    
+    result = resp.json()
+    
+    # Truncate content to manage context window (Ollama recommendation: 8000 chars)
+    if "content" in result and result["content"]:
+        content = result["content"]
+        if len(content) > 8000:
+            result["content"] = content[:8000] + "..."
+    
+    return result
 
 @app.get("/")
 async def root():
